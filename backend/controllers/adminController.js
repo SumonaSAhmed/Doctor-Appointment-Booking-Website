@@ -33,18 +33,18 @@ exports.postAddDoctor = (req, res, next) => {
     !fees ||
     !address
   ) {
-    return res.json({ success: false, massage: "Missing details" });
+    return res.json({ success: false, message: "Missing details" });
   }
 
   // validating email and password
   if (!validator.isEmail(email)) {
-    return res.json({ success: false, massage: "Please enter a valid email" });
+    return res.json({ success: false, message: "Please enter a valid email" });
   }
 
   if (password.length < 8) {
     return res.json({
       success: false,
-      massage: "Please enter a strong password",
+      message: "Please enter a strong password",
     });
   }
 
@@ -75,11 +75,11 @@ exports.postAddDoctor = (req, res, next) => {
   doctor
     .save()
     .then(() => {
-      res.json({ success: true, massage: "Doctor added successfully" });
+      res.json({ success: true, message: "Doctor added successfully" });
     })
     .catch((err) => {
       console.log(err);
-      res.json({ success: false, massage: err.message });
+      res.json({ success: false, message: err.message });
     });
 };
 
@@ -87,15 +87,15 @@ exports.postLoginAdmin = (req, res, next) => {
   const { email, password } = req.body;
   
   try {
-    if (email === process.env.ADMIN_EMAIL && pasword === process.env.ADMIN_PASSWORD) {
+    if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
     const token = jwt.sign(email+password, process.env.JWT_SECRET);
-    res.JSON({ success:true, token});
+    res.json({ success:true, token});
   } else {
     res.json({ success: false, message: "Invalid credentials" });
   }
   }
   catch (error) {
     console.log(error);
-      res.json({ success: false, massage: error.message });
+      res.json({ success: false, message: error.message });
   }
 }
