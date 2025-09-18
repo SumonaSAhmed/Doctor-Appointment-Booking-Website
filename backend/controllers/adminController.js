@@ -5,7 +5,7 @@ const doctorModel = require("../models/doctorModel.js");
 const jwt = require("jsonwebtoken");
 
 // for adding doctors
-exports.postAddDoctor = (req, res, next) => {
+exports.postAddDoctor = async (req, res, next) => {
   const {
     name,
     email,
@@ -14,9 +14,10 @@ exports.postAddDoctor = (req, res, next) => {
     degree,
     experience,
     about,
-    availablity,
+    availability,
     fees,
-    address,
+    address1,
+    address2,
   } = req.body;
   const imageFile = req.file;
 
@@ -29,9 +30,10 @@ exports.postAddDoctor = (req, res, next) => {
     !degree ||
     !experience ||
     !about ||
-    !availablity ||
+    !availability ||
     !fees ||
-    !address
+    !address1 ||
+    !address2
   ) {
     return res.json({ success: false, message: "Missing details" });
   }
@@ -49,14 +51,15 @@ exports.postAddDoctor = (req, res, next) => {
   }
 
   // hashing password
-  const salt = bcrypt.genSalt(10);
-  const hashedPassword = bcrypt.hash(password, salt);
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
   // uploading image to cloudinary
-  const imageUploaded = cloudinary.uploader.upload(imageFile.path, {
-    resource_type: "imageUrl",
+  let imageUrl = "";
+  const imageUploaded = await cloudinary.uploader.upload(imageFile.path, {
+    resource_type: "image",
   });
-  const imageUrl = imageUploaded.secure_url;
+  imageUrl = imageUploaded.secure_url;
 
   const doctor = new doctorModel({
     name,
@@ -68,7 +71,7 @@ exports.postAddDoctor = (req, res, next) => {
     experience,
     about,
     fees,
-    address: JSON.parse(address),
+    address: `${address1}, ${address2}`,
     date: Date.now(),
   });
 

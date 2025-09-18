@@ -1,19 +1,20 @@
-const mongoose = require("mongoose");
+const { mongoose } = require("mongoose");
 
 const doctorSchema = new mongoose.Schema(
   {
-    name: { type: String, require: true },
-    email: { type: String, require: true, unique: true },
-    password: { type: String, require: true },
-    imageUrl: { type: String, require: true },
-    speciality: { type: String, require: true },
-    degree: { type: String, require: true },
-    experience: { type: String, require: true },
-    about: { type: String, require: true },
-    availablity: { type: Boolean, default: true },
-    fees: { type: Number, require: true },
-    address: { type: String, require: true },
-    date: { type: Number, require: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    image: { type: String, required: true },
+    speciality: { type: String, required: true },
+    degree: { type: String, required: true },
+    experience: { type: String, required: true },
+    about: { type: String, required: true },
+    availability: { type: Boolean, default: true },
+    fees: { type: Number, required: true },
+    address1: { type: String, required: true },
+    address2: { type: String },
+    date: { type: Number, required: true },
     slot_booked: { type: Object, default: {} },
   },
   { minimize: false }
