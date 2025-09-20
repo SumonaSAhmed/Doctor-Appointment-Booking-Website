@@ -16,6 +16,7 @@ const AddDoctor = () => {
   const [speciality, setSpeciality] = useState("");
   const [experience, setExperience] = useState("");
   const [fees, setFees] = useState("");
+  const [availability, setAvailability] = useState("");
 
   const { backendUrl, aToken } = useContext(AdminContext);
 
@@ -40,6 +41,7 @@ const AddDoctor = () => {
       formData.append("speciality", speciality);
       formData.append("experience", experience);
       formData.append("fees", Number(fees));
+      formData.append("availability", availability);
 
       // console log formdata
       formData.forEach((value, key) => {
@@ -54,6 +56,18 @@ const AddDoctor = () => {
 
       if (data.success) {
         toast.success(data.message);
+        setDocImg(false);
+        setName("");
+        setEmail("");
+        setPassword("");
+        setAddress1("");
+        setAddress2("");
+        setAbout("");
+        setDegree("");
+        setSpeciality("");
+        //setExperience("");
+        setFees("");
+        //setAvailability("");
       } else {
         toast.error(data.message);
       }
@@ -189,6 +203,21 @@ const AddDoctor = () => {
                 placeholder="Enter Fees"
                 required
               />
+            </div>
+            <div className="flex-1 flex flex-col gap-1">
+              <p>Availability</p>
+              <select
+                onChange={(e) => setAvailability(e.target.value)}
+                value={availability}
+                className="border border-gray-300 rounded px-3 py-2"
+                required
+              >
+                <option value="">Select availability</option>
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Evening">Evening</option>
+                <option value="Full Day">Full Day</option>
+              </select>
             </div>
           </div>
         </div>

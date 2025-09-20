@@ -1,6 +1,6 @@
 const validator = require("validator");
 const bcrypt = require("bcrypt");
-const cloudinary = require("../config/cloudinary");
+const { cloudinary } = require("../config/cloudinary");
 const doctorModel = require("../models/doctorModel.js");
 const jwt = require("jsonwebtoken");
 
@@ -56,22 +56,26 @@ exports.postAddDoctor = async (req, res, next) => {
 
   // uploading image to cloudinary
   let imageUrl = "";
-  const imageUploaded = await cloudinary.uploader.upload(imageFile.path, {
-    resource_type: "image",
-  });
-  imageUrl = imageUploaded.secure_url;
+  if (req.file) {
+    const upload = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "image",
+    });
+    imageUrl = upload.secure_url;
+  }
 
   const doctor = new doctorModel({
     name,
     email,
-    imageUrl,
+    image: imageUrl,
     password: hashedPassword,
     speciality,
     degree,
     experience,
     about,
     fees,
-    address: `${address1}, ${address2}`,
+    address1,
+    address2,
+    availability,
     date: Date.now(),
   });
 
@@ -82,23 +86,38 @@ exports.postAddDoctor = async (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
-      res.json({ success: false, message: err.message });
+      res.json({ success: false, message: err.message || "Something went wrong" });
     });
 };
 
+// FOR ADMIN LOGIN
 exports.postLoginAdmin = (req, res, next) => {
   const { email, password } = req.body;
-  
+
   try {
-    if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-    const token = jwt.sign(email+password, process.env.JWT_SECRET);
-    res.json({ success:true, token});
-  } else {
-    res.json({ success: false, message: "Invalid credentials" });
-  }
-  }
-  catch (error) {
+    if (
+      email === process.env.ADMIN_EMAIL &&
+      password === process.env.ADMIN_PASSWORD
+    ) {
+      const token = jwt.sign({email}, process.env.JWT_SECRET);
+
+      res.json({ success: true, token });
+    } else {
+      res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+  } catch (error) {
     console.log(error);
-      res.json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// API to get all doctors
+exports.getAllDoctors = async (req, res, next) => {
+  try {
+    const doctors = await doctorModel.find({}).select("-password");
+    res.json({ success: true, doctors });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
   }
 }

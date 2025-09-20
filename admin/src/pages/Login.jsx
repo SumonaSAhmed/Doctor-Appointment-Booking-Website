@@ -18,14 +18,15 @@ const login = () => {
 
     try {
       if (state === "Admin") {
-        const { data } = await axios.post(backendUrl + "/api/admin/login", {
+        const { data } = await axios.post(`${backendUrl}/api/admin/login`, {
           email,
-          password,
+          password
         });
         console.log(data);
         if (data.success) {
           localStorage.setItem("aToken", data.token);
           setAToken(data.token);
+          toast.success("Logged in successfully");
         } else {
           toast.error(data.message);
         }
